@@ -1,7 +1,7 @@
 const { logger } = require('../middlewares/loggerMiddleware');
 const airportService = require('../services/airportService');
 
-const { validateAirportId } = require('../utils/validator');
+const { validateId } = require('../utils/validator');
 
 const getAirports = async (req, res, next) => {
   try {
@@ -27,7 +27,7 @@ const getAirportById = async (req, res, next) => {
   try {
     const airportId = req.params.id;
 
-    const { error } = validateAirportId(airportId);
+    const { error } = validateId(airportId);
     if (error) {
       logger.log({
         level: 'error',

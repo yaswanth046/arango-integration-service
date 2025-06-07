@@ -1,12 +1,13 @@
 const { Database } = require('arangojs');
 const config = require('../config');
+const { app } = config.arango;
 
 const db = new Database({
-  url: config.arango.url,
-  databaseName: config.arango.database,
+  url: app.url,
+  databaseName: app.database,
   auth: {
-    username: config.arango.username,
-    password: config.arango.password,
+    username: app.username,
+    password: app.password
   }    
 });
 

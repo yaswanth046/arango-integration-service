@@ -1,6 +1,6 @@
 const { logger } = require('../middlewares/loggerMiddleware');
 const executeAQL = require('../database/queryExecutor');
-const queries = require('../database/arangoQueries');
+const queries = require('../database/airportQueries');
 
 const getAirports = async () => {
   try {

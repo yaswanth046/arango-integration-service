@@ -8,6 +8,8 @@ A modular, scalable Node.js microservice for seamless integration with [ArangoDB
 - **ArangoDB** integration using `arangojs`
 - Centralized and structured logging with **Winston**
 - Comprehensive error handling (including Joi and ArangoDB errors)
+- **Job queueing with [BullMQ](https://docs.bullmq.io/) and [ioredis](https://github.com/luin/ioredis)**
+- **Queue monitoring UI with [Arena](https://github.com/bee-queue/arena)**
 - Linting and code quality enforced by **ESLint**
 - Environment variable management with **dotenv**
 - Ready for containerization and production deployment
@@ -18,6 +20,7 @@ A modular, scalable Node.js microservice for seamless integration with [ArangoDB
 
 - [Node.js](https://nodejs.org/) (v16 or higher recommended)
 - [ArangoDB](https://www.arangodb.com/) instance (local or Docker)
+- [Redis](https://redis.io/) instance (for BullMQ queues)
 - [npm](https://www.npmjs.com/)
 
 ### Installation
@@ -69,10 +72,71 @@ A modular, scalable Node.js microservice for seamless integration with [ArangoDB
 src/
   controllers/      # Route controllers
   middlewares/      # Logger, error handler, etc.
+  queues/           # BullMQ queue setup
+  jobs/             # BullMQ workers
+  ui/               # Arena UI integration
   routes/           # Express route definitions
   utils/            # Utility functions
   server.js         # App entry point
 ```
+
+## Job Queueing
+
+### ioredis
+
+- Used as the Redis client for BullMQ.
+- Connection is configured in `src/queues/bookingQueue.js` using environment variables.
+- Example:
+  ```js
+  const Redis = require('ioredis');
+  const connection = new Redis({
+    host: process.env.REDIS_HOST,
+    port: process.env.REDIS_PORT,
+    maxRetriesPerRequest: null,
+  });
+  ```
+
+### BullMQ
+
+- Provides robust job queueing and background processing.
+- Queues are defined in `src/queues/bookingQueue.js`.
+- Workers are defined in `src/jobs/bookingWorker.js` and process jobs asynchronously.
+- Example:
+  ```js
+  const { Queue } = require('bullmq');
+  const bookingQueue = new Queue('flightBookings', { connection });
+  ```
+
+### Arena
+
+- Arena provides a web UI to monitor and manage BullMQ queues.
+- Integrated as Express middleware in `src/ui/arena.js`.
+- Access the UI at `/arena` (e.g., `http://localhost:8080/arena`).
+- Example:
+  ```js
+  const Arena = require('bull-arena');
+  const { Queue } = require('bullmq');
+  const arenaConfig = Arena(
+    {
+      BullMQ: Queue,
+      queues: [
+        {
+          type: 'bullmq',
+          name: 'flightBookings',
+          hostId: 'Flight Booking Redis',
+          redis: {
+            host: process.env.REDIS_HOST,
+            port: process.env.REDIS_PORT,
+          },
+        },
+      ],
+    },
+    {
+      basePath: '/arena',
+      disableListen: true,
+    }
+  );
+  ```
 
 ## Logging
 

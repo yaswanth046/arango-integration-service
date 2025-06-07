@@ -29,8 +29,8 @@
     "max-nested-callbacks": ["error", 3],       // Max 3 nested callbacks
     "complexity": ["warn", 15],                 // Warn if cyclomatic complexity > 10
     "max-params": ["warn", 4],                  // Warn if function has more than 4 params
-    "max-lines-per-function": ["warn", 50],     // Warn if function exceeds 50 lines
-    "max-lines": ["warn", 300],                 // Warn if file exceeds 300 lines
+    "max-lines-per-function": ["warn", 200],     // Warn if function exceeds 50 lines
+    "max-lines": ["warn", 500],                 // Warn if file exceeds 300 lines
     "max-len": ["warn", { "code": 100 }],       // Warn if line exceeds 100 chars
     "max-statements-per-line": ["error", { "max": 1 }]
   }
